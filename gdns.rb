@@ -38,15 +38,5 @@ def dns_grabber()
   puts "Waiting for queries:"
   iface = "em1"
   capture_session = PacketFu::Capture.new(:iface => iface, :start => true, :promisc => true, :filter => "udp and port 53", :save => true)
-  # capture_session.stream.each { |packet|
-  # if packet =~ /ookie/
-  #   puts "cookie found!" 
-  #   pkt = Packet.parse packet
-  # packet_info = [pkt.ip_saddr, pkt.ip_daddr]
-  # src_ip = "%s" % packet_info
-  # dst_ip = "%s" % packet_info
-  #   puts_verbose(packet, src_ip, dst_ip)
-  #   end
-  # }
   puts "got one!"
 end
