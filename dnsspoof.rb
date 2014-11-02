@@ -55,14 +55,14 @@ end
 begin
   start()
   spoof_thread = Thread.new{runSpoof()} 
-  #cookie_thread = Thread.new{dns_grabber} 
+  dns_thread = Thread.new{dns_grabber} 
   spoof_thread.join
-  #cookie_thread.join
+  dns_thread.join
 
   rescue Interrupt # Catch the interrupt and kill the threads, and fix the arps
     puts "\nARP spoof stopped by interrupt signal."
     Thread.kill(spoof_thread)
-    #Thread.kill(cookie_thread)
+    Thread.kill(dns_thread)
     fixSpoof()
   exit 0
 end
